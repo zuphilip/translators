@@ -9,7 +9,7 @@
 	"inRepository": true,
 	"translatorType": 4,
 	"browserSupport": "gcsibv",
-	"lastUpdated": "2016-01-21 13:29:55"
+	"lastUpdated": "2016-06-26 21:34:22"
 }
 
 /*
@@ -80,10 +80,43 @@ function scrape(doc) {
 	var abs = ZU.xpath(doc, '//div/div[@style="display:inline"]')[0];
 
 	// Get genric URL, preferring the conference version.
+	/*
 	var url = ZU.xpath(doc, '//meta[@name="citation_conference"]\
 			/following-sibling::meta[@name="citation_abstract_html_url"]/@content')[0]
 		|| ZU.xpath(doc, '//meta[@name="citation_abstract_html_url"]/@content')[0];
-	url = url.textContent;
+	url = url.textContent; Z.debug(url);
+	*/
+
+	var linkNodes = ZU.xpath(doc, '//a[@href]');
+	var id, itemID, parentID = '';
+	for (var i=0; i<linkNodes.length; i++) {
+		var parts = linkNodes[i].href.split(/[?&#]/);
+		if (parts[0].indexOf("citation.cfm")>-1 || parts[0].indexOf("rightslink.cfm")>-1) {
+			//Z.debug(parts);
+			for (var j=0; j<parts.length; j++) {
+				if (parts[j].indexOf("id=") == 0) {
+					id = parts[j].substr(3);
+				}
+				if (parts[j].indexOf("parent_id=") == 0) {
+					parentID = parts[j].substr(10);
+				}
+			}
+		}
+	}
+	//Z.debug(id); Z.debug(id.split(".")); Z.debug(parentID);
+	if (id.indexOf(".") > -1) {
+		itemID = id.split(".")[1];
+		if (parentID == '') {
+			parentID = id.split(".")[0];
+		}
+		var url = "http://dl.acm.org/citation.cfm?id=" + parentID + "." + itemID;
+	} else {
+		itemID = id;
+		var url = "http://dl.acm.org/citation.cfm?id=" + itemID;
+	}
+	//Z.debug(itemID); Z.debug(parentID);
+	//Z.debug(url);
+	
 
 	// Get item ID and parent ID
 	// ID format in the url is id=<parentID>.<itemID> or id=<itemID>
