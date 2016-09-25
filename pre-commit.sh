@@ -31,12 +31,14 @@ if [[ -n "$deleted" ]];then
     echo "$newrevision (newrevision) =/= $oldrevision (oldrevision) + 1"
     exit 1
   fi
+  echo "okay"
   # all deleted translator ids must be now listed in deleted.txt
   listed=$(git diff --cached --diff-filter=D -- '*.js*' | grep '"translatorID"' | awk -F: '{print $2}' | sed 's/[", ]//g' | xargs -i grep -c {} deleted.txt | awk '$1!="1" {print "Error"}')
   if [[ -n "$listed" ]];then
     echo "Error: translators are deleted but not listed in deleted.txt."
     exit 1
   fi
+  echo "okay"
 fi
 
 
