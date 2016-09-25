@@ -22,7 +22,7 @@ fi
 
 git fetch origin master
 echo "CHECK that deleted translator are added to deleted.txt and number is increased"
-deleted=$(git diff master --name-only --diff-filter=D -- '*.js*')
+deleted=$(git diff origin/master --name-only --diff-filter=D -- '*.js*')
 if [[ -n "$deleted" ]];then
   # number increased
   oldrevision=$(git show HEAD:deleted.txt | awk 'NR<2 { print $1 }')
@@ -34,7 +34,7 @@ if [[ -n "$deleted" ]];then
   fi
   echo "okay"
   # all deleted translator ids must be now listed in deleted.txt
-  listed=$(git diff master --diff-filter=D -- '*.js*' | grep '"translatorID"' | awk -F: '{print $2}' | sed 's/[", ]//g' | xargs -i grep -c {} deleted.txt | awk '$1!="1" {print "Error"}')
+  listed=$(git diff origin/master --diff-filter=D -- '*.js*' | grep '"translatorID"' | awk -F: '{print $2}' | sed 's/[", ]//g' | xargs -i grep -c {} deleted.txt | awk '$1!="1" {print "Error"}')
   if [[ -n "$listed" ]];then
     echo "Error: translators are deleted but not listed in deleted.txt."
     exit 1
@@ -43,7 +43,7 @@ if [[ -n "$deleted" ]];then
 fi
 
 
-staged=$(git diff master --name-only --diff-filter=ACM -- '*.js*')
+staged=$(git diff origin/master --name-only --diff-filter=ACM -- '*.js*')
 if [[ -n "$staged" ]];then
   echo "Staged"
   echo "$staged"
