@@ -21,6 +21,7 @@ if [[ -n "$noduplicate" ]];then
 fi
 
 git fetch origin master
+git remote -v
 echo "CHECK that deleted translator are added to deleted.txt and number is increased"
 deleted=$(git diff origin/master --name-only --diff-filter=D -- '*.js*')
 if [[ -n "$deleted" ]];then
