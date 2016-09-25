@@ -22,7 +22,11 @@ fi
 
 echo "CHECK that deleted translator are added to deleted.txt and number is increased"
 deleted=$(git diff --cached --name-only --diff-filter=D -- '*.js*')
+echo "deleted"
 echo "$deleted"
+commited=$(git diff HEAD^ --name-only --diff-filter=D -- '*.js*')
+echo "commited"
+echo "$commited"
 if [[ -n "$deleted" ]];then
   # number increased
   oldrevision=$(git show HEAD:deleted.txt | awk 'NR<2 { print $1 }')
