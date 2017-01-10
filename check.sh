@@ -66,7 +66,7 @@ if [[ -n "$STAGED" ]];then
   for f in "$STAGED"; do
     #check that JSON part is parsable
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
-    sed -ne  '1,/^}/p' "$f" | jsonlint -q 
+    sed -ne  '1,/^}/p' "$f" | jsonlint 
     #check that JavaScript part is parsable
     # cf. https://github.com/UB-Mannheim/zotkat/blob/master/jshint.sh
     sed '1,/^}/ s/.*//' "$f" \
