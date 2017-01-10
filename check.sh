@@ -51,7 +51,7 @@ echo -e "\nTEST output \$TRAVIS_COMMIT_RANGE  $TRAVIS_COMMIT_RANGE"
 echo -e "TEST output \$TRAVIS_BRANCH  $TRAVIS_BRANCH"
 echo -e "TEST output \$TRAVIS_PULL_REQUEST  $TRAVIS_PULL_REQUEST"
 
-IFS=$'\n'
+IFS=$'\n' # Internal Field Separator (IFS) used for word splitting
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
@@ -63,12 +63,12 @@ if [[ -n "$STAGED" ]];then
     echo "$NOAGPL"
     #This is only a warning and not an error currently.
   fi
-  for f in $(echo -e "$STAGED"); do # problematic...
+  for f in $(echo -e "$STAGED"); do
     #check that JSON part is parsable
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     parsejson=$(sed -ne  '1,/^}/p' "$f" | jsonlint)
-    jsonerror=$(grep 'Parse error' "$(parsejson)")
-    if [[ -n "$(jsonerror)" ]];then
+    jsonerror=$(grep 'Parse error' "$parsejson")
+    if [[ -n "$jsonerror" ]];then
       echo "ERROR: Parse error in JSON part of $(f)"
       exitcode=1
     fi
