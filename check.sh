@@ -48,10 +48,18 @@ echo "...DONE"
 
 
 echo -e "\nTEST output \$TRAVIS_COMMIT_RANGE  $TRAVIS_COMMIT_RANGE"
+echo -e "\nTEST output \$TRAVIS_BRANCH  $TRAVIS_BRANCH"
+echo -e "\nTEST output \$TRAVIS_PULL_REQUEST  $TRAVIS_PULL_REQUEST"
 
-echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parasable)..."
+echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to origin/master
-STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
+#except we are already on master by either a PR or direct commit
+#then we will use $TRAVIS_COMMIT_RANGE instead.
+if [[ "$TRAVIS_BRANCH" -eq "master" ]];then
+  STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
+else
+  STAGED=$(git diff --name-only --diff-filter=ACM origin/master -- '*.js*')
+fi
 if [[ -n "$STAGED" ]];then
   #check for AGPL license text
   NOAGPL=$(grep -L "GNU Affero General Public License" "$STAGED")
@@ -121,6 +129,7 @@ echo "...DONE"
 # done
 # echo "...DONE"
 
-
-echo -e "\nOKAY, all tests passed!"
+if [[ "$exitcode" -eq 0 ]];then
+  echo -e "\nOKAY, all tests passed!"
+fi
 exit "$exitcode"
