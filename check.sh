@@ -53,14 +53,8 @@ echo -e "TEST output \$TRAVIS_PULL_REQUEST  $TRAVIS_PULL_REQUEST"
 git remote -v
 
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
-#list all added, copied or modified files compared to origin/master
-#except we are already on master by either a PR or direct commit
-#then we will use $TRAVIS_COMMIT_RANGE instead.
-if [[ "$TRAVIS_BRANCH" == "master" ]];then
-  STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
-else
-  STAGED=$(git diff --name-only --diff-filter=ACM origin/master -- '*.js*')
-fi
+#list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
+STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
 if [[ -n "$STAGED" ]];then
   #check for AGPL license text
   NOAGPL=$(grep -L "GNU Affero General Public License" "$STAGED")
