@@ -56,13 +56,13 @@ echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
 if [[ -n "$STAGED" ]];then
   #check for AGPL license text
-  NOAGPL=$("$STAGED" | xargs -d '\n' grep -L "GNU Affero General Public License")
+  NOAGPL=$(echo "$STAGED" | xargs -d '\n' grep -L "GNU Affero General Public License")
   if [[ -n "$NOAGPL" ]];then
     echo "Warning: found translator without AGPL license text:"
     echo "$NOAGPL"
     #This is only a warning and not an error currently.
   fi
-  for f in "$STAGED"; do # problematic...
+  for f in $(echo -e "$STAGED"); do # problematic...
     #check that JSON part is parsable
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     sed -ne  '1,/^}/p' "$f" | jsonlint -q 
