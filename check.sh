@@ -50,20 +50,19 @@ echo "...DONE"
 echo -e "\nTEST output \$TRAVIS_COMMIT_RANGE  $TRAVIS_COMMIT_RANGE"
 echo -e "TEST output \$TRAVIS_BRANCH  $TRAVIS_BRANCH"
 echo -e "TEST output \$TRAVIS_PULL_REQUEST  $TRAVIS_PULL_REQUEST"
-git remote -v
 
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
 if [[ -n "$STAGED" ]];then
   #check for AGPL license text
-  NOAGPL=$(grep -L "GNU Affero General Public License" "$STAGED")
+  NOAGPL=$("$STAGED" | xargs -d '\n' grep -L "GNU Affero General Public License")
   if [[ -n "$NOAGPL" ]];then
     echo "Warning: found translator without AGPL license text:"
     echo "$NOAGPL"
     #This is only a warning and not an error currently.
   fi
-  for f in "$STAGED"; do
+  for f in "$STAGED"; do # problematic...
     #check that JSON part is parsable
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     sed -ne  '1,/^}/p' "$f" | jsonlint -q 
