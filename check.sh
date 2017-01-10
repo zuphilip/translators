@@ -51,6 +51,7 @@ echo -e "\nTEST output \$TRAVIS_COMMIT_RANGE  $TRAVIS_COMMIT_RANGE"
 echo -e "TEST output \$TRAVIS_BRANCH  $TRAVIS_BRANCH"
 echo -e "TEST output \$TRAVIS_PULL_REQUEST  $TRAVIS_PULL_REQUEST"
 
+IFS=$'\n'
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
