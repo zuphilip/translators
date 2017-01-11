@@ -62,18 +62,18 @@ STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*
 # declare -a STAGED 
 # dann kann leichter damit weitergearbeitet werden in einer for-Schleife
 if [[ -n "$STAGED" ]];then
-  echo "...check for AGPL license text..."
-  NOAGPL=$(echo "$STAGED" | xargs -d '\n' grep -L "GNU Affero General Public License")
-  if [[ -n "$NOAGPL" ]];then
-    echo "Warning: found translator without AGPL license text:"
-    echo "$NOAGPL"
-    #This is only a warning and not an error currently.
-  fi
   for f in $(echo -e "$STAGED"); do
+    echo "...check for AGPL license text..."
+    noagpl=$(grep -L "GNU Affero General Public License" "$f")
+    if [[ -n "$noagpl" ]];then
+      echo "Warning: found translator without AGPL license text: $f"
+      #This is only a warning and not an error currently.
+    fi
     echo "...check that JSON part is parsable..."
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     jsonpart=$(sed -ne  '1,/^}/p' "$f")
     jsonerror=$(echo "$jsonpart" | jsonlint)
+    #Check the exit code of the last command, which is saved in the variable $?
     if [[ "$?" -gt 0  ]];then
       echo "ERROR: Parse error in JSON part of $f"
       echo "$jsonerror"
