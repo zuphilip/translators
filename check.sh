@@ -57,6 +57,10 @@ IFS=$'\n'
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
+#TODO
+# STAGED als Array speichern durch
+# declare -a STAGED 
+# dann kann leichter damit weitergearbeitet werden in einer for-Schleife
 if [[ -n "$STAGED" ]];then
   echo "...check for AGPL license text..."
   NOAGPL=$(echo "$STAGED" | xargs -d '\n' grep -L "GNU Affero General Public License")
@@ -69,10 +73,10 @@ if [[ -n "$STAGED" ]];then
     echo "...check that JSON part is parsable..."
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     jsonpart=$(sed -ne  '1,/^}/p' "$f")
-	jsonerror=$(echo "$jsonpart" | jsonlint | grep -F "Parse error")
-    if [[ -n "$jsonerror"  ]];then
+    jsonerror=$(echo "$jsonpart" | jsonlint)
+    if [[ "$?" -gt 0  ]];then
       echo "ERROR: Parse error in JSON part of $f"
-	  echo "$jsonpart" | jsonlint
+      echo "$jsonerror"
       exitcode=1
     fi
     echo "...check that JavaScript part is parsable..."
