@@ -68,9 +68,10 @@ if [[ -n "$STAGED" ]];then
   for f in $(echo -e "$STAGED"); do
     echo "...check that JSON part is parsable..."
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
-    parsejson=$(sed -ne  '1,/^}/p' "$f" | jsonlint)
-    if [[ "$parsejson" =~ "Parse error" ]];then
+    jsonpart=$(sed -ne  '1,/^}/p' "$f")
+    if [[ -n $(jsonlint -q "$jsonpart") ]];then
       echo "ERROR: Parse error in JSON part of $f"
+	  jsonlint "$jsonpart"
       exitcode=1
     fi
     echo "...check that JavaScript part is parsable..."
