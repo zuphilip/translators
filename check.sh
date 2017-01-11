@@ -58,31 +58,34 @@ echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
 if [[ -n "$STAGED" ]];then
-  #check for AGPL license text
+  echo "...check for AGPL license text..."
   NOAGPL=$(echo "$STAGED" | xargs -d '\n' grep -L "GNU Affero General Public License")
   if [[ -n "$NOAGPL" ]];then
     echo "Warning: found translator without AGPL license text:"
     echo "$NOAGPL"
     #This is only a warning and not an error currently.
   fi
-  set -v
   for f in $(echo -e "$STAGED"); do
-    #check that JSON part is parsable
+    echo "...check that JSON part is parsable..."
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     parsejson=$(sed -ne  '1,/^}/p' "$f" | jsonlint)
+	echo "---"
+	echo "$parsejson"
+	echo "---"
+	echo "$parsejson" | grep 'Parse error'
+	echo "---"
     jsonerror=$(echo "$parsejson" | grep 'Parse error')
     if [[ -n "$jsonerror" ]];then
       echo "ERROR: Parse error in JSON part of $f"
       exitcode=1
     fi
-    #check that JavaScript part is parsable
+    echo "...check that JavaScript part is parsable..."
     # cf. https://github.com/UB-Mannheim/zotkat/blob/master/jshint.sh
     sed '1,/^}/ s/.*//' "$f" \
     | sed 's,/\*\* BEGIN TEST,\n\0,' \
     | sed '/BEGIN TEST/,$ d' \
     | jshint --filename="$f" - 
   done;
-  set +v
 fi
 echo "...DONE"
 
