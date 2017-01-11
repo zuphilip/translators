@@ -52,13 +52,8 @@ echo "...DONE"
 IFS=$'\n' 
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
-declare -a STAGED # array
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
-#TODO
-# STAGED als Array speichern durch
-# declare -a STAGED 
-# dann kann leichter damit weitergearbeitet werden in einer for-Schleife
-for f in "$STAGED"; do
+for f in $(echo -e "$STAGED"); do
   echo "   checking $f now..."
   #check for AGPL license text
   noagpl=$(grep -L "GNU Affero General Public License" "$f")
