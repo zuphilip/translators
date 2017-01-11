@@ -75,7 +75,7 @@ if [[ -n "$STAGED" ]];then
 	echo "$parsejson" | grep 'Parse error'
 	echo "---"
     jsonerror=$(echo "$parsejson" | grep 'Parse error')
-    if [[ -n "$jsonerror" ]];then
+    if [[ "$parsejson" == *"Parse error"* ]];then
       echo "ERROR: Parse error in JSON part of $f"
       exitcode=1
     fi
