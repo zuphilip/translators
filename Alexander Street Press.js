@@ -8,7 +8,7 @@
 	"maxVersion":"",
 	"priority":100,
 	"inRepository":true,
-	"lastUpdated":"2009-01-08 16:19:07"
+	"lastUpdated":"2009-01-08 17:19:07"
 }
 
 function detectWeb(doc, url) {

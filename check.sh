@@ -65,13 +65,14 @@ if [[ -n "$STAGED" ]];then
     echo "$NOAGPL"
     #This is only a warning and not an error currently.
   fi
+  set -v
   for f in $(echo -e "$STAGED"); do
     #check that JSON part is parsable
     # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
     parsejson=$(sed -ne  '1,/^}/p' "$f" | jsonlint)
     jsonerror=$(echo "$parsejson" | grep 'Parse error')
     if [[ -n "$jsonerror" ]];then
-      echo "ERROR: Parse error in JSON part of $(f)"
+      echo "ERROR: Parse error in JSON part of $f"
       exitcode=1
     fi
     #check that JavaScript part is parsable
@@ -81,6 +82,7 @@ if [[ -n "$STAGED" ]];then
     | sed '/BEGIN TEST/,$ d' \
     | jshint --filename="$f" - 
   done;
+  set +v
 fi
 echo "...DONE"
 
