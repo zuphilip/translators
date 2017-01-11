@@ -72,7 +72,7 @@ if [[ -n "$STAGED" ]];then
 	jsonerror=$(echo "$jsonpart" | jsonlint | grep -F "Parse error")
     if [[ -n "$jsonerror"  ]];then
       echo "ERROR: Parse error in JSON part of $f"
-	  jsonlint "$jsonpart"
+	  echo "$jsonpart" | jsonlint
       exitcode=1
     fi
     echo "...check that JavaScript part is parsable..."
