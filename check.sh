@@ -47,10 +47,6 @@ done
 echo "...DONE"
 
 
-echo -e "\nTEST output \$TRAVIS_COMMIT_RANGE  $TRAVIS_COMMIT_RANGE"
-echo -e "TEST output \$TRAVIS_BRANCH  $TRAVIS_BRANCH"
-echo -e "TEST output \$TRAVIS_PULL_REQUEST  $TRAVIS_PULL_REQUEST"
-
 # The Internal Field Separator (IFS) is used for word splitting.
 # Change default value <space><tab><newline> to newline only.
 IFS=$'\n' 
@@ -61,32 +57,30 @@ STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*
 # STAGED als Array speichern durch
 # declare -a STAGED 
 # dann kann leichter damit weitergearbeitet werden in einer for-Schleife
-if [[ -n "$STAGED" ]];then
-  for f in $(echo -e "$STAGED"); do
-    echo "...check for AGPL license text..."
-    noagpl=$(grep -L "GNU Affero General Public License" "$f")
-    if [[ -n "$noagpl" ]];then
-      echo "Warning: found translator without AGPL license text: $f"
-      #This is only a warning and not an error currently.
-    fi
-    echo "...check that JSON part is parsable..."
-    # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
-    jsonpart=$(sed -ne  '1,/^}/p' "$f")
-    jsonerror=$(echo "$jsonpart" | jsonlint)
-    #Check the exit code of the last command, which is saved in the variable $?
-    if [[ "$?" -gt 0  ]];then
-      echo "ERROR: Parse error in JSON part of $f"
-      echo "$jsonerror"
-      exitcode=1
-    fi
-    echo "...check that JavaScript part is parsable..."
-    # cf. https://github.com/UB-Mannheim/zotkat/blob/master/jshint.sh
-    sed '1,/^}/ s/.*//' "$f" \
-    | sed 's,/\*\* BEGIN TEST,\n\0,' \
-    | sed '/BEGIN TEST/,$ d' \
-    | jshint --filename="$f" - 
-  done;
-fi
+for f in $(echo -e "$STAGED"); do
+  echo "...check for AGPL license text..."
+  noagpl=$(grep -L "GNU Affero General Public License" "$f")
+  if [[ -n "$noagpl" ]];then
+    echo "Warning: found translator without AGPL license text: $f"
+    #This is only a warning and not an error currently.
+  fi
+  echo "...check that JSON part is parsable..."
+  # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
+  jsonpart=$(sed -ne  '1,/^}/p' "$f")
+  jsonerror=$(echo "$jsonpart" | jsonlint)
+  #Check the exit code of the last command, which is saved in the variable $?
+  if [[ "$?" -gt 0  ]];then
+    echo "ERROR: Parse error in JSON part of $f"
+    echo "$jsonerror"
+    exitcode=1
+  fi
+  echo "...check that JavaScript part is parsable..."
+  # cf. https://github.com/UB-Mannheim/zotkat/blob/master/jshint.sh
+  sed '1,/^}/ s/.*//' "$f" \
+  | sed 's,/\*\* BEGIN TEST,\n\0,' \
+  | sed '/BEGIN TEST/,$ d' \
+  | jshint --filename="$f" - 
+done;
 echo "...DONE"
 
 

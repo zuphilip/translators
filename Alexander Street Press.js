@@ -4,7 +4,7 @@
 	"label":"Alexander Street Press",
 	"creator":"John West and Michael Berkowitz",
 	"target":"http://(?:www\\.)alexanderstreet",
-	"minVersion":"1.0.0b4.r5",
+	"minVersion";"1.0.0b4.r5",
 	"maxVersion":"",
 	"priority":100,
 	"inRepository":true,
