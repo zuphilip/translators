@@ -52,19 +52,21 @@ echo "...DONE"
 IFS=$'\n' 
 echo -e "\nCHECK added/modified files (AGPL license, JS parsable, JSON parsable)..."
 #list all added, copied or modified files compared to $TRAVIS_COMMIT_RANGE.
+declare -a STAGED # array
 STAGED=$(git diff --name-only --diff-filter=ACM "$TRAVIS_COMMIT_RANGE" -- '*.js*')
 #TODO
 # STAGED als Array speichern durch
 # declare -a STAGED 
 # dann kann leichter damit weitergearbeitet werden in einer for-Schleife
-for f in $(echo -e "$STAGED"); do
-  echo "...check for AGPL license text..."
+for f in "$STAGED"; do
+  echo "   checking $f now..."
+  #check for AGPL license text
   noagpl=$(grep -L "GNU Affero General Public License" "$f")
   if [[ -n "$noagpl" ]];then
-    echo "Warning: found translator without AGPL license text: $f"
+    echo "Warning: AGPL license text not found"
     #This is only a warning and not an error currently.
   fi
-  echo "...check that JSON part is parsable..."
+  # check that JSON part is parsable
   # e.g. https://github.com/zotero/translators/commit/a150383352caebb892720098175dbc958149be43
   jsonpart=$(sed -ne  '1,/^}/p' "$f")
   jsonerror=$(echo "$jsonpart" | jsonlint)
@@ -74,7 +76,7 @@ for f in $(echo -e "$STAGED"); do
     echo "$jsonerror"
     exitcode=1
   fi
-  echo "...check that JavaScript part is parsable..."
+  # check that JavaScript part is parsable
   # cf. https://github.com/UB-Mannheim/zotkat/blob/master/jshint.sh
   sed '1,/^}/ s/.*//' "$f" \
   | sed 's,/\*\* BEGIN TEST,\n\0,' \
