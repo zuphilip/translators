@@ -90,6 +90,8 @@ echo "...DONE"
 
 # #$TRAVIS_COMMIT_RANGE = The range of commits that were included in the push or pull request
 # #####################
+
+
 # first=true
 # for c in "$TRAVIS_COMMIT_RANGE"; do
   # echo "$c"
@@ -128,6 +130,6 @@ echo "...DONE"
 # echo "...DONE"
 
 if [[ "$exitcode" -eq 0 ]];then
-  echo -e "\nOKAY, all tests passed!"
+  echo -e "\nOKAY, all tests passed! You might still want to look at the warnings."
 fi
 exit "$exitcode"
