@@ -1,5 +1,5 @@
 {
-	"translatorID": "f3f092bf-ae09-4be6-8855-a22ddd817925",
+	"translatorID": "0a84a653-79ea-4c6a-8a68-da933e3b504a",
 	"label": "ACM Digital Library",
 	"creator": "Simon Kornblith, Michael Berkowitz, John McCaffery, and Sebastian Karcher",
 	"target": "^https?://([^/]+\\.)?dl\\.acm\\.org/(results|citation|author_page)\\.cfm",

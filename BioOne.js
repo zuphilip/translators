@@ -52,7 +52,7 @@ function doWeb(doc, url) {
   if (detectWeb(doc, url) == "multiple") {
 	var items = new Object();
 	var rows = ZU.xpath(doc, '//div[@class="searchEntry"]');
-	for (var i in rows) {
+	for each (var i in rows) {
 	 var title = ZU.xpathText(rows[i], './/h4[@class="searchTitle"]');
 			var id = ZU.xpath(rows[i], './/p[@class="searchEntryTools"]/a')[0].href;
 			items[id] = title;
