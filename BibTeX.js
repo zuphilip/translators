@@ -18,7 +18,7 @@
 	"inRepository": true,
 	"translatorType": 3,
 	"browserSupport": "gcsv",
-	"lastUpdated": "2015-07-02 02:03:17"
+	"lastUpdated": "2017-12-27 21:53:46"
 }
 
 function detectImport() {
@@ -804,6 +804,10 @@ function beginRecord(type, closeChar) {
 		item._extraFields = [];
 	}
 	
+	// For theses write the thesisType determined by the BibTeX type.
+	if (type == "mastersthesis" && item) item.type = "Master's Thesis";
+	if (type == "phdthesis" && item) item.type = "PhD Thesis";
+
 	var field = "";
 	
 	// by setting dontRead to true, we can skip a read on the next iteration
@@ -1174,14 +1178,16 @@ function doExport() {
 		var type = zotero2bibtexTypeMap[item.itemType];
 		if (typeof(type) == "function") { type = type(item); }
 
-		// The thesis Zotero type doesn't nicely map onto a BibTeX type,
-		// as BibTeX uses both @mastersthesis and @phdthesis. We thus have
-		// to tell them apart by the "Type" field as well as by the item type.
+		// For theses BibTeX distinguish between @mastersthesis and @phdthesis
+		// and the default mapping will map all Zotero thesis items to a
+		// BibTeX phdthesis item. Here we try to fix this by examining the
+		// Zotero thesisType field.
 		if (type == "phdthesis") {
 			// In practice, we just want to separate out masters theses,
 			// and will assume everything else maps to @phdthesis. Better to
 			// err on the side of caution.
-			if (item["type"] && item["type"].toLowerCase() == "masters") {
+			var thesisType = item.type && item.type.toLowerCase().replace(/[\s.]+|thesis|unpublished/g, '');
+			if (thesisType &&  (thesisType == 'master' || thesisType == 'masters'  || thesisType == "master's" || thesisType == 'ms' || thesisType == 'msc' || thesisType == 'ma')) {
 				type = "mastersthesis";
 				item["type"] = "";
 			}
@@ -3461,6 +3467,7 @@ var testCases = [
 		"items": [
 			{
 				"itemType": "journalArticle",
+				"title": "Testing identifier import",
 				"creators": [
 					{
 						"firstName": "John",
@@ -3468,13 +3475,58 @@ var testCases = [
 						"creatorType": "author"
 					}
 				],
-				"notes": [],
-				"tags": [],
-				"seeAlso": [],
-				"attachments": [],
-				"itemID": "smith_testing_????",
 				"extra": "LCCN: L123456\nMR: MR123456\nZbl: ZM123456\nPMID: P123456\nPMCID: PMC123456\narXiv: AX123456",
-				"title": "Testing identifier import"
+				"itemID": "smith_testing_????",
+				"attachments": [],
+				"tags": [],
+				"notes": [],
+				"seeAlso": []
+			}
+		]
+	},
+	{
+		"type": "import",
+		"input": "@mastersthesis{DBLP:ms/Hoffmann2008,\n  author    = {Oliver Hoffmann},\n  title     = {Regelbasierte Extraktion und asymmetrische Fusion bibliographischer\n               Informationen},\n  school    = {Diplomarbeit, Universit{\\\"{a}}t Trier, {FB} IV, {DBIS/DBLP}},\n  year      = {2009},\n  url       = {http://dblp.uni-trier.de/papers/DiplomarbeitOliverHoffmann.pdf},\n  timestamp = {Wed, 03 Aug 2011 15:40:21 +0200},\n  biburl    = {http://dblp.org/rec/bib/ms/Hoffmann2008},\n  bibsource = {dblp computer science bibliography, http://dblp.org}\n}\n\n@phdthesis{DBLP:phd/Ackermann2009,\n  author    = {Marcel R. Ackermann},\n  title     = {Algorithms for the Bregman k-Median problem},\n  school    = {University of Paderborn},\n  year      = {2009},\n  url       = {http://digital.ub.uni-paderborn.de/hs/content/titleinfo/1561},\n  urn       = {urn:nbn:de:hbz:466-20100407029},\n  timestamp = {Thu, 01 Dec 2016 16:33:49 +0100},\n  biburl    = {http://dblp.org/rec/bib/phd/Ackermann2009},\n  bibsource = {dblp computer science bibliography, http://dblp.org}\n}",
+		"items": [
+			{
+				"itemType": "thesis",
+				"title": "Regelbasierte Extraktion und asymmetrische Fusion bibliographischer Informationen",
+				"creators": [
+					{
+						"firstName": "Oliver",
+						"lastName": "Hoffmann",
+						"creatorType": "author"
+					}
+				],
+				"date": "2009",
+				"itemID": "DBLP:ms/Hoffmann2008",
+				"thesisType": "Master's Thesis",
+				"university": "Diplomarbeit, Universität Trier, FB IV, DBIS/DBLP",
+				"url": "http://dblp.uni-trier.de/papers/DiplomarbeitOliverHoffmann.pdf",
+				"attachments": [],
+				"tags": [],
+				"notes": [],
+				"seeAlso": []
+			},
+			{
+				"itemType": "thesis",
+				"title": "Algorithms for the Bregman k-Median problem",
+				"creators": [
+					{
+						"firstName": "Marcel R.",
+						"lastName": "Ackermann",
+						"creatorType": "author"
+					}
+				],
+				"date": "2009",
+				"itemID": "DBLP:phd/Ackermann2009",
+				"thesisType": "PhD Thesis",
+				"university": "University of Paderborn",
+				"url": "http://digital.ub.uni-paderborn.de/hs/content/titleinfo/1561",
+				"attachments": [],
+				"tags": [],
+				"notes": [],
+				"seeAlso": []
 			}
 		]
 	}
