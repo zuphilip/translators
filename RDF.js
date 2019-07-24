@@ -982,21 +982,18 @@ function importItem(newItem, node) {
 		n.dcterms + "citation.volume",
 		n.so + "volumeNumber"], true);
 	
-	// issue
-	if (container) {
-		newItem.issue = getFirstResults([container, node], [n.prism + "number",
-			n.prism2_0 + "number",
-			n.prism2_1 + "number",
-			n.eprints + "number",
-			n.bibo + "issue",
-			n.dc + "source.Issue",
-			n.dcterms + "citation.issue",
-			n.so + "issueNumber"], true);
-	}
+	newItem.issue = getFirstResults([container, node], [n.prism + "number",
+		n.prism2_0 + "number",
+		n.prism2_1 + "number",
+		n.eprints + "number",
+		n.bibo + "issue",
+		n.dc + "source.Issue",
+		n.dcterms + "citation.issue",
+		n.so + "issueNumber"], true);
 
 	// these mean the same thing
 	newItem.patentNumber = newItem.number = newItem.issue;
-	
+
 	// edition
 	newItem.edition = getFirstResults(node, [n.prism + "edition", n.prism2_0 + "edition", n.prism2_1 + "edition", n.bibo + "edition", n.so + "bookEdition", n.so + "version"], true);
 	// these fields mean the same thing
